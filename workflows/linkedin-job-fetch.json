@@ -1,0 +1,25 @@
+{
+  "name": "LinkedIn Job Fetch",
+  "nodes": [
+    {
+      "parameters": {
+        "command": "node ../scrape/scrape.js",
+        "executeOnce": true
+      },
+      "name": "Execute Command",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    }
+  ],
+  "connections": {},
+  "active": false,
+  "settings": {},
+  "version": 1,
+  "meta": {
+    "instanceId": "PLACEHOLDER"
+  }
+} 
