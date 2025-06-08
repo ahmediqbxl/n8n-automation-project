@@ -8,14 +8,14 @@ This project contains an automated workflow for scraping LinkedIn job postings u
 - `workflows/` - Contains the n8n workflow file for job fetching automation
 - `output/` - Storage for scraped job data and debugging logs
 - `docker-compose.yaml` - Docker configuration for running n8n
+- `Dockerfile` - Custom Docker image configuration with required dependencies
 - `n8n-data/` - Persistent storage for n8n data (created when running Docker)
 
 ## Getting Started
 
 1. Install Dependencies
-   - Node.js and npm for the scraper
-   - Docker and Docker Compose for running n8n
-   - Or n8n installed directly on your system
+   - Docker and Docker Compose for running n8n (recommended)
+   - Or Node.js and npm if running directly on your system
 
 2. Setup Scraper
    ```bash
@@ -26,6 +26,10 @@ This project contains an automated workflow for scraping LinkedIn job postings u
 3. Start n8n
    Using Docker (recommended):
    ```bash
+   # Build the custom Docker image
+   docker-compose build
+
+   # Start the container
    docker-compose up -d
    ```
    This will start n8n at http://localhost:5678
@@ -45,6 +49,27 @@ This project contains an automated workflow for scraping LinkedIn job postings u
      1. Update the Execute Command node's path to match your system
      2. Set up Google Sheets credentials (see Google Sheets Setup below)
      3. Update the Google Sheet ID in the Save to Google Sheet node
+
+## Docker Configuration
+
+The project includes a custom Docker setup:
+
+### Dockerfile
+- Based on official n8n image
+- Includes additional dependencies:
+  - linkedin-jobs-scraper
+  - puppeteer
+
+### docker-compose.yaml
+- Uses the custom Dockerfile
+- n8n running on port 5678
+- Basic authentication enabled
+- Timezone set to America/Edmonton
+- Persistent data storage in `./n8n-data`
+
+To change the default credentials, modify the following environment variables in `docker-compose.yaml`:
+- `N8N_BASIC_AUTH_USER`
+- `N8N_BASIC_AUTH_PASSWORD`
 
 ## Google Sheets Setup
 
@@ -100,18 +125,6 @@ This project contains an automated workflow for scraping LinkedIn job postings u
 The scraper will save job data to:
 - `output/jobs_log.json` (when run independently)
 - Your configured Google Sheet (when run via n8n)
-
-## Docker Configuration
-
-The `docker-compose.yaml` file includes:
-- n8n running on port 5678
-- Basic authentication enabled
-- Timezone set to America/Edmonton
-- Persistent data storage in `./n8n-data`
-
-To change the default credentials, modify the following environment variables in `docker-compose.yaml`:
-- `N8N_BASIC_AUTH_USER`
-- `N8N_BASIC_AUTH_PASSWORD`
 
 ## License
 
