@@ -74,9 +74,7 @@ const path = require('path');
                 location: "United States",
                 limit: 100,
                 filters: {
-                    time: {
-                        timePosted: "past-24h",
-                    }
+                    time: ['r86400']
                 }
             },
         },
