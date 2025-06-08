@@ -2,24 +2,76 @@
   "name": "LinkedIn Job Fetch",
   "nodes": [
     {
+      "id": "Cron",
       "parameters": {
-        "command": "node ../scrape/scrape.js",
-        "executeOnce": true
+        "triggerTimes": [
+          {
+            "mode": "everyDay",
+            "hour": 9,
+            "minute": 0
+          }
+        ]
       },
-      "name": "Execute Command",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [200, 200]
+    },
+    {
+      "id": "ExecuteCommand",
+      "parameters": {
+        "command": "node /absolute/path/to/your/job-app-automation/scrape/scrape.js",
+        "shell": true
+      },
+      "name": "Run LinkedIn Scraper",
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
-      "position": [
-        250,
-        300
-      ]
+      "position": [400, 200]
+    },
+    {
+      "id": "Function",
+      "parameters": {
+        "functionCode": "const data = items[0].json;\nreturn data.map(job => ({\n  json: {\n    date: new Date().toISOString().split(\"T\")[0],\n    title: job.title,\n    company: job.company,\n    location: job.location,\n    description: job.description,\n    jobUrl: job.jobUrl,\n    applied: \"No\"\n  }\n}));"
+      },
+      "name": "Format Job Items",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [600, 200]
+    },
+    {
+      "id": "GoogleSheets",
+      "parameters": {
+        "authentication": "oAuth2",
+        "sheetId": "your-google-sheet-id",
+        "range": "Sheet1!A:G",
+        "options": {
+          "valueInputMode": "USER_ENTERED"
+        }
+      },
+      "name": "Save to Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [800, 200],
+      "credentials": {
+        "googleApi": {
+          "id": "your-credential-id",
+          "name": "Your Google Sheets Credential"
+        }
+      }
     }
   ],
-  "connections": {},
+  "connections": {
+    "Daily Trigger": {
+      "main": [["Run LinkedIn Scraper"]]
+    },
+    "Run LinkedIn Scraper": {
+      "main": [["Format Job Items"]]
+    },
+    "Format Job Items": {
+      "main": [["Save to Google Sheet"]]
+    }
+  },
   "active": false,
   "settings": {},
-  "version": 1,
-  "meta": {
-    "instanceId": "PLACEHOLDER"
-  }
+  "versionId": "1"
 } 
